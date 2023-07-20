@@ -14,9 +14,57 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//okhttp libraries
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
+
+
 import org.w3c.dom.Text;
 
 public class Controller extends AppCompatActivity {
+
+    private OkHttpClient client;
+    WebSocket ws;
+
+    int count = 0;
+    int currentThrottle, currentTurn;
+    String ThrottleDir,TurnDir;
+
+    private final class EchoWebSocketListener extends WebSocketListener {
+        private static final int NORMAL_CLOSURE_STATUS = 1000;
+
+        //Works but needs to be neatened and refined
+        @Override
+        public void onOpen(WebSocket webSocket, Response response) {
+            webSocket.send("Connected");
+            //webSocket.send("F");
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, String text) {
+            output("Receiving : " + text);
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, ByteString bytes) {
+            output("Receiving bytes : " + bytes.hex());
+        }
+
+        @Override
+        public void onClosing(WebSocket webSocket, int code, String reason) {
+            webSocket.close(NORMAL_CLOSURE_STATUS, null);
+            output("Closing : " + code + " / " + reason);
+        }
+
+        @Override
+        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            output("Error : " + t.getMessage());
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -24,90 +72,89 @@ public class Controller extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
 
-        float throttleOrigin, turnOrigin;
-        final float[] x = new float[1];
-        final float[] y = new float[1];
+        client = new OkHttpClient();
+        currentThrottle = 0;
+        ThrottleDir = "Stop";
+        currentTurn = 0;
+        TurnDir="Center";
+        TextView Throttle_mag = findViewById(R.id.txtThrottleMag);
 
-        final float[] throttleMagnitude = new float[1];
-        final float[] turnMagnitude = new float[1];
 
-        final String[] throttleDirection = new String[1];
-        final String[] TurnDirection = new String[1];
-        FrameLayout leftStick = findViewById(R.id.flLeftStick);
-        //throttleOrigin = leftStick.getY()/2 - leftStick.getHeight()/2;
-        throttleOrigin = leftStick.getY() - leftStick.getHeight() + 310; //had to include an offset factor. Its a rough estimate but works fine.
-        //==================== Left Stick (fwrd/bckwrd) on-touch Listener ==========================
-
-        leftStick.setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
+        ImageButton FWRD = findViewById(R.id.btnFwrd);
+        FWRD.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                //Log.i("LeftJS", "Touch detected");
-
-                int eventType = motionEvent.getActionMasked();
-
-                switch (eventType){
-
-                    case MotionEvent.ACTION_DOWN:
-                        Log.i("LeftJS", "Action Down");
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        throttleMagnitude[0] = 0;
-                        Log.i("LeftJS", "Not Moving " + " == Magnitude: " + throttleMagnitude[0]);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        y[0] = motionEvent.getY();
-                        throttleMagnitude[0] = throttleOrigin - y[0];
-                        if (throttleMagnitude[0]<0){
-                            throttleDirection[0] = "Reverse";
-                        }
-                        else{
-                            throttleDirection[0] = "Forward";
-                        }
-                        Log.i("LeftJS", "Moving " + throttleDirection[0] + " == Magnitude: " + throttleMagnitude[0]);
-                        break;
-
+            public void onClick(View view) {
+                if(ThrottleDir.equals("B")){
+                    if (currentThrottle != 0) {
+                        currentThrottle -= 10;
+                        ws.send(ThrottleDir + "#" + Integer.toString(currentThrottle));
+                    }
+                    else if (currentThrottle==0){
+                        ThrottleDir = "Stop";
+                        Toast toast = Toast.makeText(getApplicationContext(),"Vehicle Stationary", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 }
-                return true;
+                else if (ThrottleDir.equals("F") || ThrottleDir.equals("Stop")){
+                    if (currentThrottle!=100){
+                        currentThrottle+=10;
+                        ThrottleDir = "F";
+                        ws.send(ThrottleDir + "#" + Integer.toString(currentThrottle));
+                    }
+                    else if(currentThrottle==100){
+                        Toast toast = Toast.makeText(getApplicationContext(),"MAX Throttle", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+                Throttle_mag.setText(ThrottleDir + "||" + Integer.toString(currentThrottle));
             }
         });
 
-        FrameLayout rightStick = findViewById(R.id.flRightStick);
-        turnOrigin = rightStick.getX() - rightStick.getWidth()+310;
-        //==================== Right Stick (left/right) on-touch Listener ==========================
+        ImageButton BWRD = findViewById(R.id.btnRev);
 
-        rightStick.setOnTouchListener(new View.OnTouchListener() {
+        BWRD.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                //Log.i("RightJS", "Touch detected");
-                int eventType = motionEvent.getActionMasked();
-
-                switch (eventType){
-
-                    case MotionEvent.ACTION_DOWN:
-                        Log.i("RightJS", "Action Down");
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        turnMagnitude[0] = 0;
-                        Log.i("RightJS", "Not Turning " + " == Magnitude: " + turnMagnitude[0]);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        x[0] = motionEvent.getX();
-                        turnMagnitude[0] = turnOrigin - x[0];
-                        if (turnMagnitude[0]<0){
-                            TurnDirection[0] = "Right";
-                        }
-                        else{
-                            TurnDirection[0] = "Left";
-                        }
-                        Log.i("RightJS", "Turning " + TurnDirection[0] + " == Magnitude: " + turnMagnitude[0]);
-                        break;
-
+            public void onClick(View view) {
+                if(ThrottleDir.equals("F")){
+                    if (currentThrottle != 0) {
+                        currentThrottle -= 10;
+                        ws.send(ThrottleDir + "#" + Integer.toString(currentThrottle));
+                    }
+                    else if (currentThrottle==0){
+                        ThrottleDir = "Stop";
+                        ws.send("stop");
+                        Toast toast = Toast.makeText(getApplicationContext(),"Vehicle Stationary", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 }
-                return true;
+                else if (ThrottleDir.equals("B") || ThrottleDir.equals("Stop")){
+                    if (currentThrottle!=100){
+                        currentThrottle+=10;
+                        ThrottleDir = "B";
+                        ws.send(ThrottleDir + "#" + Integer.toString(currentThrottle));
+                    }
+                    else if(currentThrottle==100){
+                        Toast toast = Toast.makeText(getApplicationContext(),"MAX Throttle", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+                Throttle_mag.setText(ThrottleDir + "||" + Integer.toString(currentThrottle));
             }
         });
+
+        ImageButton Throttlez = findViewById(R.id.btnThrottleZ);
+
+        Throttlez.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentThrottle=0;
+                ThrottleDir = "Stop";
+                ws.send("stop");
+            }
+        });
+
 
         ImageButton home  = findViewById(R.id.btnHome); //Object for home button
 
@@ -163,7 +210,9 @@ public class Controller extends AppCompatActivity {
         power.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast toast = Toast.makeText(getApplicationContext(),"It's over 9000!!!", Toast.LENGTH_SHORT);  //Sends message for Power
+                start();
+                ws.send("Init");
+                Toast toast = Toast.makeText(getApplicationContext(),"Connected to CarONE", Toast.LENGTH_SHORT);  //Sends message for Power
                 toast.show();
             }
         });
@@ -216,5 +265,28 @@ public class Controller extends AppCompatActivity {
         ImageView connect = findViewById(R.id.imgConn);
 
 
+    }
+
+    private void start() {
+        //DOMT FORGET THE ENDPOINT!!!!! ==> /ws
+        Request request = new Request.Builder().url("ws://192.168.18.188/test").build();
+        EchoWebSocketListener listener = new EchoWebSocketListener();
+        ws = client.newWebSocket(request, listener);
+
+        //client.dispatcher().executorService().shutdown();
+    }
+
+    private void output(final String txt) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast;
+                Toast.makeText(getApplicationContext(),txt, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void send_data(String data){
+        ws.send(data);
     }
 }

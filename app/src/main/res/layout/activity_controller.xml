@@ -100,7 +100,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.092"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="17dp" />
+
+            <ImageButton
+                android:id="@+id/btnFwrd"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@color/Int_Blk"
+                app:srcCompat="@drawable/throttle_tile_2" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/btnThrottleZ"
+                android:layout_width="match_parent"
+                android:layout_height="84dp"
+                app:srcCompat="@drawable/center_icon"
+                android:background="@color/Int_Blk"/>
+
+            <ImageButton
+                android:id="@+id/btnRev"
+                android:layout_width="match_parent"
+                android:layout_height="67dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                app:srcCompat="@drawable/reverse_button"
+                android:background="@color/Int_Blk"/>
+        </LinearLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/flRightStick"
@@ -115,6 +155,41 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
+        <LinearLayout
+            android:layout_width="231dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="1dp"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:id="@+id/btnLeft"
+                android:layout_width="88dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/Int_Blk"
+                app:srcCompat="@drawable/left_button" />
+
+            <ImageButton
+                android:id="@+id/btnSteerZ"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/Int_Blk"
+                app:srcCompat="@drawable/center_icon" />
+
+            <ImageButton
+                android:id="@+id/btnRight"
+                android:layout_width="94dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/Int_Blk"
+                app:srcCompat="@drawable/right_button" />
+        </LinearLayout>
     </FrameLayout>
 
     <ImageButton
@@ -301,5 +376,20 @@
         app:layout_constraintHorizontal_bias="0.923"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/flRightStick" />
+
+    <TextView
+        android:id="@+id/txtThrottleMag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/ntr"
+        android:text=""
+        android:textAlignment="textEnd"
+        android:textColor="@color/Int_Blk"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView11"
+        app:layout_constraintVertical_bias="0.671" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

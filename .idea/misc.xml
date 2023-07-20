@@ -5,14 +5,19 @@
       <map>
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/button_bg_blk.xml" value="0.364" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/button_bg_google_signin.xml" value="0.3495" />
+        <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/center_icon.xml" value="0.364" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/edit_bg_white.xml" value="0.363" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/ic_outline_volume_down_24.xml" value="0.364" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/ic_round_power_settings_new_24.xml" value="0.364" />
+        <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/left_button.xml" value="0.363" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/login_bg_rect_green.xml" value="0.363" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/login_rect_green.xml" value="0.364" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/logo_bg_circle_blk.xml" value="0.364" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/mainscreen_data_tiles_blk.xml" value="0.363" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/nav_bar_main.xml" value="0.364" />
+        <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/reverse_button.xml" value="0.22" />
+        <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/right_button.xml" value="0.364" />
+        <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/throttle_tile_2.xml" value="0.363" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/drawable/throttle_tile_blk.xml" value="0.363" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/layout/activity_controller.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/sesh1/Desktop/Coding/CarONE_Prototype_1/app/src/main/res/layout/activity_main.xml" value="0.36302083333333335" />
