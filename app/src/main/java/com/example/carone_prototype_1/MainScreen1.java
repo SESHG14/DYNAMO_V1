@@ -63,7 +63,7 @@ public class MainScreen1 extends AppCompatActivity {
 
         TextView BatteryPercentage = findViewById(R.id.txtBatt_Pcnt);   //Text View objects to work with
 
-        TextView Range = findViewById(R.id.txtRange);
+        //TextView Range = findViewById(R.id.txtRange);
 
         TextView Voltage = findViewById(R.id.txtVoltage);
 

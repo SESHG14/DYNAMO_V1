@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,7 +33,8 @@ public class Controller extends AppCompatActivity {
 
     int count = 0;
     int currentThrottle, currentTurn;
-    String ThrottleDir,TurnDir;
+    String ThrottleDir,TurnDir, url;
+    EditText edturl;
 
     private final class EchoWebSocketListener extends WebSocketListener {
         private static final int NORMAL_CLOSURE_STATUS = 1000;
@@ -75,11 +77,14 @@ public class Controller extends AppCompatActivity {
         client = new OkHttpClient();
         currentThrottle = 0;
         ThrottleDir = "Stop";
-        currentTurn = 0;
+        currentTurn = 90;
         TurnDir="Center";
         TextView Throttle_mag = findViewById(R.id.txtThrottleMag);
+        TextView TurnAng = findViewById(R.id.txtTurnAngle);
+        edturl = findViewById(R.id.edtURL);
 
-
+        //======================THROTTLE CONTROLS====================================
+        //For reducing Backward speed and moving forward.
         ImageButton FWRD = findViewById(R.id.btnFwrd);
         FWRD.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +116,7 @@ public class Controller extends AppCompatActivity {
             }
         });
 
+        //For reducing forward speed and moving backward.
         ImageButton BWRD = findViewById(R.id.btnRev);
 
         BWRD.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +150,7 @@ public class Controller extends AppCompatActivity {
             }
         });
 
+        //Used for setting throttle magnitude to 0
         ImageButton Throttlez = findViewById(R.id.btnThrottleZ);
 
         Throttlez.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +162,83 @@ public class Controller extends AppCompatActivity {
             }
         });
 
+        //=====================STEERING CONTROLS=====================================
 
+        ImageButton leftArr = findViewById(R.id.btnLeft);
+        leftArr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(TurnDir.equals("R")){
+                    if (currentTurn != 90) {
+                        currentTurn -= 45;
+                        ws.send(TurnDir + "#" + Integer.toString(currentTurn));
+                    }
+                    else if (currentTurn==90){
+                        TurnDir = "Center";
+                        ws.send("center");
+                        Toast toast = Toast.makeText(getApplicationContext(),"Steering centered", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+                else if (TurnDir.equals("L") || TurnDir.equals("Center")){
+                    if (currentTurn!=0){
+                        currentTurn-=45;
+                        TurnDir = "L";
+                        ws.send(TurnDir + "#" + Integer.toString(currentTurn));
+                    }
+                    else if(currentTurn==0){
+                        Toast toast = Toast.makeText(getApplicationContext(),"Full Left", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+                TurnAng.setText(TurnDir + "||" + Integer.toString(currentTurn));
+            }
+        });
+
+        ImageButton rightArr = findViewById(R.id.btnRight);
+        rightArr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(TurnDir.equals("L")){
+                    if (currentTurn != 90) {
+                        currentTurn += 45;
+                        ws.send(TurnDir + "#" + Integer.toString(currentTurn));
+                    }
+                    else if (currentTurn==90){
+                        TurnDir = "Center";
+                        ws.send("center");
+                        Toast toast = Toast.makeText(getApplicationContext(),"Steering centered", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+                else if (TurnDir.equals("R") || TurnDir.equals("Center")){
+                    if (currentTurn!=180){
+                        currentTurn+=45;
+                        TurnDir = "R";
+                        ws.send(TurnDir + "#" + Integer.toString(currentTurn));
+                    }
+                    else if(currentTurn==180){
+                        Toast toast = Toast.makeText(getApplicationContext(),"Full Right", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+                TurnAng.setText(TurnDir + "||" + Integer.toString(currentTurn));
+            }
+        });
+
+        ImageButton Turnz = findViewById(R.id.btnSteerZ);
+        Turnz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentTurn=90;
+                TurnDir = "Center";
+                ws.send("center");
+            }
+        });
+        //===========================================================================
+        //=====================Interface Controls====================================
         ImageButton home  = findViewById(R.id.btnHome); //Object for home button
 
         //==================== Home Button Action Listener ==========================
@@ -210,6 +293,7 @@ public class Controller extends AppCompatActivity {
         power.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                url = edturl.getText().toString();
                 start();
                 ws.send("Init");
                 Toast toast = Toast.makeText(getApplicationContext(),"Connected to CarONE", Toast.LENGTH_SHORT);  //Sends message for Power
@@ -254,11 +338,11 @@ public class Controller extends AppCompatActivity {
             }
         });
 
-        TextView speed = findViewById(R.id.txtSpeed);   //Text View Objects to work with
+       // TextView speed = findViewById(R.id.txtSpeed);   //Text View Objects to work with
 
-        TextView battPercent = findViewById(R.id.txtBattPercent);
+        //TextView battPercent = findViewById(R.id.txtBattPercent);
 
-        TextView Range = findViewById(R.id.txtRange);
+        //TextView Range = findViewById(R.id.txtRange);
 
         TextView Connection = findViewById(R.id.txtConn);
 
@@ -269,7 +353,8 @@ public class Controller extends AppCompatActivity {
 
     private void start() {
         //DOMT FORGET THE ENDPOINT!!!!! ==> /ws
-        Request request = new Request.Builder().url("ws://192.168.18.188/test").build();
+        //  ws://192.168.136.4/test
+        Request request = new Request.Builder().url(url).build();
         EchoWebSocketListener listener = new EchoWebSocketListener();
         ws = client.newWebSocket(request, listener);
 
